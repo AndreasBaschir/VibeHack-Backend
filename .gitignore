@@ -191,9 +191,6 @@ $RECYCLE.BIN/
 .railway/
 railway.toml
 
-# Docker
-.dockerignore
-
 # HTML/CSS to image cache
 images/
 previews/
