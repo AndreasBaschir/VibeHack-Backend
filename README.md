@@ -9,3 +9,15 @@
     2. Generate HTML with CSS with added recommendations
     3. Send to `htmlcsstoimage.com` to generate preview of Website with added changes
 4. Show preview on client
+
+## Tech stack
+
+### Frontend
+
+- NextJS
+
+### Backend
+
+- Playwright
+- Python FastAPI
+- Claude SDK
