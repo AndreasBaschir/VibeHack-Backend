@@ -1,17 +1,9 @@
-from ..schemas import AuditRequest
+from schemas.pydantic_models import AuditRequest
 
-def build_audit_prompt(request: AuditRequest) -> str:
-    """
-    Build a dynamic prompt based on the audit request context
-    """
-    
-    base_prompt = """
-You are an expert auditor for Search Engine Optimization (SEO) and Generative Engine Optimization (GEO). 
+SYSTEM_PROMPT = """
+You are an expert auditor for Search Engine Optimization (SEO) and Generative Engine Optimization (GEO).
 
-Your task is to analyze the provided website and generate a comprehensive audit report.
-
-Website URL: {url}
-{content_section}
+Your task is to analyze the provided website HTML content and generate a comprehensive audit report.
 
 Please provide your analysis in the following structured format:
 
@@ -39,19 +31,18 @@ Provide a score between 0 and 100 based on the overall SEO quality.
 
 Ensure your analysis is thorough and recommendations are practical and implementable.
 """
+
+def build_audit_context(request: AuditRequest) -> str:
+    """
+    Build the user message context with URL and HTML content
+    """
     
-    # Build content section based on whether content is provided
-    if request.content:
-        content_section = f"""
-Website Content Analysis:
-{request.content[::]}...  
-        """
-    else:
-        content_section = """
-Content: No website content provided - analyze based on URL and general best practices.
-        """
+    context = f"""
+        Website URL: {request.url}
+
+        HTML Content Analysis:
+        {request.content}
+    """
     
-    return base_prompt.format(
-        url=str(request.url),
-        content_section=content_section
-    )
+    return context
+
