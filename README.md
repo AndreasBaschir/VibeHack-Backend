@@ -21,3 +21,9 @@
 - Playwright
 - Python FastAPI
 - Claude SDK
+
+# Routes
+
+- GET /
+- GET /health
+- POST /audit
