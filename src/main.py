@@ -38,6 +38,7 @@ def audit(request: AuditRequest):
     
     try:
         # Build dynamic prompt with request context
+        
         prompt = build_audit_prompt(request)
         logger.info(f"Analyzing URL: {request.url}")
         
