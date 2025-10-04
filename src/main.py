@@ -4,7 +4,7 @@ import logging
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
-from prompts import build_audit_prompt
+from prompts import build_audit_context, SYSTEM_PROMPT
 from schemas import AuditRequest, AuditResponse
 
 
@@ -37,19 +37,19 @@ def audit(request: AuditRequest):
         raise HTTPException(status_code=500, detail="Client could not be initialized")
     
     try:
-        # Build dynamic prompt with request context
-        prompt = build_audit_prompt(request)
+        # Build context with HTML content for user message
+        context = build_audit_context(request)
         logger.info(f"Analyzing URL: {request.url}")
         
         # Call Claude API
         message = client.messages.create(
             model="claude-3-5-haiku-20241022",
-            max_tokens=1500,
             temperature=0.1,
+            system=SYSTEM_PROMPT,
             messages=[
                 {
                     "role": "user", 
-                    "content": prompt
+                    "content": context
                 }
             ]
         )
