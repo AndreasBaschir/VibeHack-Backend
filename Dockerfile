@@ -16,5 +16,5 @@ COPY src/ ./src/
 # Expose port (Railway will override this with $PORT)
 EXPOSE 8000
 
-# Start command - Railway will set $PORT automatically
-CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Start command - Use Railway's $PORT environment variable
+CMD ["sh", "-c", "uvicorn src.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
