@@ -29,7 +29,13 @@ def home():
 
 @app.get('/health')
 def health():
-    return {"status": "healthy", "service": "vibehack-backend", "port": os.getenv("PORT", "8000")}
+    """Health check endpoint for Railway deployment"""
+    return {
+        "status": "healthy", 
+        "service": "vibehack-backend", 
+        "port": os.getenv("PORT", "8000"),
+        "timestamp": "2024-01-01T00:00:00Z"  # Railway expects a timestamp
+    }
 
 @app.post('/audit', response_model=AuditResponse)
 def audit(request: AuditRequest):
