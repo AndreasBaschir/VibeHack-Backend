@@ -15,16 +15,21 @@ if not api_key:
 
 logger.info("✅ ANTHROPIC_API_KEY found, proceeding with application setup")
 
-app = FastAPI()
+app = FastAPI(title="VibeHack Backend", description="AI-powered GEO analysis API", version="1.0.0")
 
-@app.route('/', methods=['GET'])
+@app.get('/')
 def home():
-    return "Welcome to the VibeHack Backend!"
+    return {"message": "Welcome to the VibeHack Backend!", "version": "1.0.0"}
 
-@app.route('/health', methods=['GET'])
+@app.get('/health')
 def health():
-    return {"status": "healthy"}
+    return {"status": "healthy", "service": "vibehack-backend"}
 
-@app.route('/audit', methods=['POST'])
+@app.post('/audit')
 def audit():
-    return {"message": "Audit endpoint"}
+    return {"message": "Audit endpoint ready", "status": "success"}
+
+if __name__ == "__main__":
+    import uvicorn
+    port = int(os.getenv("PORT", 8000))
+    uvicorn.run(app, host="0.0.0.0", port=port)
