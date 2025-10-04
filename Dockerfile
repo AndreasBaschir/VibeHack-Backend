@@ -2,7 +2,7 @@
 FROM python:3.11-slim
 
 # Set working directory
-WORKDIR /vibehack-backend
+WORKDIR /app
 
 # Copy requirements first for better caching
 COPY requirements.txt .
@@ -11,10 +11,13 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
-COPY src/ ./src/
+COPY src/ ./
+
+# Set Python path to current directory
+ENV PYTHONPATH=/app
 
 # Expose port (Railway will override this with $PORT)
 EXPOSE 8000
 
 # Start command - Use Railway's $PORT environment variable
-CMD ["sh", "-c", "uvicorn src.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
+CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"]
