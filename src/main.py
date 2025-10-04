@@ -23,13 +23,16 @@ def home():
 
 @app.get('/health')
 def health():
-    return {"status": "healthy", "service": "vibehack-backend"}
+    return {"status": "healthy", "service": "vibehack-backend", "port": os.getenv("PORT", "8000")}
 
 @app.post('/audit')
 def audit():
+    if not api_key:
+        return {"error": "ANTHROPIC_API_KEY not configured", "status": "error"}
     return {"message": "Audit endpoint ready", "status": "success"}
 
 if __name__ == "__main__":
     import uvicorn
     port = int(os.getenv("PORT", 8000))
+    logger.info(f"🚀 Starting server on port {port}")
     uvicorn.run(app, host="0.0.0.0", port=port)
