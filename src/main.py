@@ -4,6 +4,7 @@ import logging
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from prompts import build_audit_context, SYSTEM_PROMPT
 from schemas import AuditRequest, AuditResponse
 
@@ -22,6 +23,24 @@ client = anthropic.Anthropic(api_key=api_key)
 logger.info("✅ ANTHROPIC_API_KEY found, proceeding with application setup")
 
 app = FastAPI(title="VibeHack Backend", description="AI-powered GEO analysis API", version="1.0.0")
+
+# CORS origins for Vercel frontend
+allowed_origins = [
+    "http://localhost:8000",  # Local development
+    "http://localhost:8080",  # Alternative local port
+    "https://*.vercel.app",   # Vercel preview/production deployments
+    "https://vibehack-frontend.vercel.app/",  # Main production domain (adjust as needed)
+]
+
+
+# Add CORS middleware for Vercel frontend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=allowed_origins,
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["*"],
+)
 
 @app.get('/')
 def home():
