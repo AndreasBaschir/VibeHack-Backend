@@ -4,7 +4,7 @@ import logging
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
-from prompts import SYSTEM_PROMPT
+from prompts import build_audit_prompt
 from schemas import AuditRequest, AuditResponse
 
 
@@ -35,17 +35,20 @@ def health():
 def audit(request: AuditRequest):
     if not client:
         raise HTTPException(status_code=500, detail="Client could not be initialized")
+    
     try:
-        prompt = SYSTEM_PROMPT
+        # Build dynamic prompt with request context
+        prompt = build_audit_prompt(request)
+        logger.info(f"Analyzing URL: {request.url}")
         
         # Call Claude API
         message = client.messages.create(
-            model="claude-3-sonnet-20240229",
-            max_tokens=1000,
+            model="claude-3-5-haiku-20241022",
+            max_tokens=1500,
             temperature=0.1,
             messages=[
                 {
-                    "role": "user",
+                    "role": "user", 
                     "content": prompt
                 }
             ]
@@ -53,10 +56,11 @@ def audit(request: AuditRequest):
         
         # Parse Claude's response
         response_text = message.content[0].text
+        logger.info(f"Claude response received: {len(response_text)} characters")
         
-        # Simple parsing - you can make this more sophisticated
+        # Enhanced parsing logic
         lines = response_text.split('\n')
-        seo_score = 75  # Default score, extract from response
+        seo_score = 75  # Default score
         recommendations = []
         technical_issues = []
         content_suggestions = []
@@ -67,16 +71,18 @@ def audit(request: AuditRequest):
             if not line:
                 continue
                 
+            # Extract SEO score
             if "score" in line.lower() and any(char.isdigit() for char in line):
-                # Extract score from line
                 numbers = [int(s) for s in line.split() if s.isdigit()]
                 if numbers:
                     seo_score = min(100, max(0, numbers[0]))
+                    
+            # Detect sections
             elif "recommendation" in line.lower():
                 current_section = "recommendations"
             elif "technical" in line.lower():
                 current_section = "technical"
-            elif "content" in line.lower():
+            elif "content" in line.lower() and "suggestions" in line.lower():
                 current_section = "content"
             elif line.startswith('-') or line.startswith('•') or line.startswith('*'):
                 item = line[1:].strip()
@@ -87,12 +93,13 @@ def audit(request: AuditRequest):
                 elif current_section == "content":
                     content_suggestions.append(item)
         
-        # Ensure we have some default recommendations if parsing failed
-        if not recommendations and not technical_issues and not content_suggestions:
+        # Fallback recommendations if parsing failed
+        if not any([recommendations, technical_issues, content_suggestions]):
             recommendations = [
-                "Improve meta descriptions",
-                "Add proper heading structure",
-                "Optimize images with alt text"
+                "Improve meta descriptions for better CTR",
+                "Add proper heading structure (H1, H2, H3)",
+                "Optimize images with descriptive alt text",
+                "Improve internal linking structure"
             ]
         
         return AuditResponse(
