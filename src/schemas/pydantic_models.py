@@ -1,20 +1,16 @@
-from typing import Optional
 from pydantic import BaseModel, HttpUrl
 
 # Request/Response models
 class AuditRequest(BaseModel):
-    """Pydantic model for POST /audit request containing website URL and mandatory HTML content for SEO/GEO analysis.
+    """Pydantic model for POST /audit request containing website URL for SEO/GEO analysis.
 
     :param url: The URL of the website to audit for SEO/GEO optimization
     :type url: HttpUrl
-    :param content: HTML content of the website for comprehensive analysis
-    :type content: str
     :raises ValidationError: If URL format is invalid or required fields are missing
     :return: Validated AuditRequest instance
     :rtype: AuditRequest
     """
     url: HttpUrl
-    content: str
     
 class AuditResponse(BaseModel):
     """Pydantic model for POST /audit response containing comprehensive SEO/GEO analysis results.
