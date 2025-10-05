@@ -1,5 +1,7 @@
 # VibeHack-Backend
 
+The backend is hosted at: [https://vibehack-backend-6zrx.onrender.com](https://vibehack-backend-6zrx.onrender.com)
+
 ## User journey
 
 1. User enters the web platform and provides the link to his website
