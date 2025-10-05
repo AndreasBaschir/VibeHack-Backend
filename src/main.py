@@ -1,10 +1,11 @@
-import anthropic
 import os
 import logging
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from google import genai
+from google.genai import types
 from prompts import build_audit_context, SYSTEM_PROMPT
 from schemas import AuditRequest, AuditResponse
 
@@ -18,7 +19,7 @@ if not api_key:
     logger.error("❌ ANTHROPIC_API_KEY not found in environment variables")
     raise ValueError("ANTHROPIC_API_KEY is required")
 
-client = anthropic.Anthropic(api_key=api_key)
+client = genai.Client(api_key=api_key)
 
 logger.info("✅ ANTHROPIC_API_KEY found, proceeding with application setup")
 
@@ -66,22 +67,18 @@ def audit(request: AuditRequest):
         context = build_audit_context(request)
         logger.info(f"Analyzing URL: {request.url}")
         
-        # Call Claude API
-        message = client.messages.create(
-            model="claude-3-5-haiku-20241022",
-            temperature=0.1,
-            system=SYSTEM_PROMPT,
-            messages=[
-                {
-                    "role": "user", 
-                    "content": context
-                }
-            ]
+        # Call Gemini API
+        message = client.models.generate_content(
+            model="gemini-2.5-flash",
+            config=types.GenerateContentConfig(
+                system_instruction=SYSTEM_PROMPT
+            ),
+            contents=context
         )
         
-        # Parse Claude's response
-        response_text = message.content[0].text
-        logger.info(f"Claude response received: {len(response_text)} characters")
+        # Parse Gemini's response
+        response_text = message.content[0].strip()
+        logger.info(f"Gemini response received: {len(response_text)} characters")
         
         # Enhanced parsing logic
         lines = response_text.split('\n')

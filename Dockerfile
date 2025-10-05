@@ -16,8 +16,8 @@ COPY src/ ./
 # Set Python path to current directory
 ENV PYTHONPATH=/app
 
-# Expose port (Railway will override this with $PORT)
+# Expose port 
 EXPOSE 8000
 
 # Start command - Use Railway's $PORT environment variable
-CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"]
+CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
