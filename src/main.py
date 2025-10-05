@@ -1,3 +1,4 @@
+import json
 import os
 import logging
 
@@ -80,56 +81,19 @@ async def audit(request: AuditRequest):
         response_text = message.text.strip()
         logger.info(f"Gemini response received: {len(response_text)} characters")
         
-        # Enhanced parsing logic
-        lines = response_text.split('\n')
-        seo_score = 75  # Default score
-        recommendations = []
-        technical_issues = []
-        content_suggestions = []
+        # Clean the response to ensure it's valid JSON
+        if response_text.startswith("```json"):
+            response_text = response_text[7:]
+        if response_text.endswith("```"):
+            response_text = response_text[:-3]
         
-        current_section = None
-        for line in lines:
-            line = line.strip()
-            if not line:
-                continue
-                
-            # Extract SEO score
-            if "score" in line.lower() and any(char.isdigit() for char in line):
-                numbers = [int(s) for s in line.split() if s.isdigit()]
-                if numbers:
-                    seo_score = min(100, max(0, numbers[0]))
-                    
-            # Detect sections
-            elif "recommendation" in line.lower():
-                current_section = "recommendations"
-            elif "technical" in line.lower():
-                current_section = "technical"
-            elif "content" in line.lower() and "suggestions" in line.lower():
-                current_section = "content"
-            elif line.startswith('-') or line.startswith('•') or line.startswith('*'):
-                item = line[1:].strip()
-                if current_section == "recommendations":
-                    recommendations.append(item)
-                elif current_section == "technical":
-                    technical_issues.append(item)
-                elif current_section == "content":
-                    content_suggestions.append(item)
-        
-        # Fallback recommendations if parsing failed
-        if not any([recommendations, technical_issues, content_suggestions]):
-            recommendations = [
-                "Improve meta descriptions for better CTR",
-                "Add proper heading structure (H1, H2, H3)",
-                "Optimize images with descriptive alt text",
-                "Improve internal linking structure"
-            ]
-        
+        audit_data = json.loads(response_text)
         return AuditResponse(
             url=str(request.url),
-            seo_score=seo_score,
-            recommendations=recommendations,
-            technical_issues=technical_issues,
-            content_suggestions=content_suggestions,
+            seo_score=audit_data.get("seo_score", 0),
+            recommendations=audit_data.get("recommendations", []),
+            technical_issues=audit_data.get("technical_issues", []),
+            content_suggestions=audit_data.get("content_suggestions", []),
             status="success",
             html_content=html_content
         )
