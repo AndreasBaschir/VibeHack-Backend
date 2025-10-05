@@ -1,4 +1,4 @@
-from schemas.pydantic_models import AuditRequest
+from ..schemas.pydantic_models import AuditRequest
 
 SYSTEM_PROMPT = """
 You are an expert auditor for Search Engine Optimization (SEO) and Generative Engine Optimization (GEO).
