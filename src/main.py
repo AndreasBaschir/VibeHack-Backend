@@ -58,13 +58,13 @@ def health():
     }
 
 @app.post('/audit', response_model=AuditResponse)
-def audit(request: AuditRequest):
+async def audit(request: AuditRequest):
     if not client:
         raise HTTPException(status_code=500, detail="Client could not be initialized")
     
     try:
-        # Build context with HTML content for user message
-        context = build_audit_context(request)
+        # Scrape website and build context
+        context = await build_audit_context(request)
         logger.info(f"Analyzing URL: {request.url}")
         
         # Call Gemini API
