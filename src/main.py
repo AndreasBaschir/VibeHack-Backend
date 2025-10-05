@@ -69,7 +69,7 @@ async def audit(request: AuditRequest):
         
         # Call Gemini API
         message = client.models.generate_content(
-            model=genai.GenerativeModel("gemini-2.5-flash"),
+            model="gemini-2.5-flash",
             config=types.GenerateContentConfig(
                 system_instruction=SYSTEM_PROMPT
             ),
