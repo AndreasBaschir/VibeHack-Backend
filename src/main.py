@@ -6,8 +6,8 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from google import genai
 from google.genai import types
-from prompts import build_audit_context, SYSTEM_PROMPT
-from schemas import AuditRequest, AuditResponse
+from .prompts import build_audit_context, SYSTEM_PROMPT
+from .schemas import AuditRequest, AuditResponse
 
 
 load_dotenv()
