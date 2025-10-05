@@ -64,20 +64,17 @@ async def audit(request: AuditRequest):
     
     try:
         # Scrape website and build context
-        context = await build_audit_context(request)
+        context, html_content = await build_audit_context(request)
         logger.info(f"Analyzing URL: {request.url}")
         
         # Call Gemini API
-        message = client.models.generate_content(
-            model="gemini-2.5-flash",
-            config=types.GenerateContentConfig(
-                system_instruction=SYSTEM_PROMPT
-            ),
-            contents=context
+        model = genai.GenerativeModel("gemini-1.5-flash")
+        response = model.generate_content(
+            [SYSTEM_PROMPT, context],
         )
         
         # Parse Gemini's response
-        response_text = message.text.strip()
+        response_text = response.text.strip()
         logger.info(f"Gemini response received: {len(response_text)} characters")
         
         # Enhanced parsing logic
@@ -130,7 +127,8 @@ async def audit(request: AuditRequest):
             recommendations=recommendations,
             technical_issues=technical_issues,
             content_suggestions=content_suggestions,
-            status="success"
+            status="success",
+            html_content=html_content
         )
 
     except Exception as e:

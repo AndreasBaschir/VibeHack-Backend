@@ -27,6 +27,8 @@ class AuditResponse(BaseModel):
     :type content_suggestions: list[str]
     :param status: Status of the audit operation (e.g., "success", "failed", "partial")
     :type status: str
+    :param html_content: The scraped HTML content of the audited website
+    :type html_content: str
     :raises ValidationError: If response data doesn't match expected schema
     :return: Validated AuditResponse instance
     :rtype: AuditResponse
@@ -37,3 +39,4 @@ class AuditResponse(BaseModel):
     technical_issues: list[str]
     content_suggestions: list[str]
     status: str
+    html_content: str

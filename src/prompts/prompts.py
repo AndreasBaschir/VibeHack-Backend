@@ -1,3 +1,4 @@
+from typing import Tuple
 from ..schemas.pydantic_models import AuditRequest
 from ..utils.scraper import scrape_website
 
@@ -33,13 +34,15 @@ Provide a score between 0 and 100 based on the overall SEO quality.
 Ensure your analysis is thorough and recommendations are practical and implementable.
 """
 
-async def build_audit_context(request: AuditRequest) -> str:
+async def build_audit_context(request: AuditRequest) -> Tuple[str, str]:
     """
-    Build the user message context by scraping the provided URL
+    Build the user message context by scraping the provided URL,
+    and return both the context for the model and the raw HTML content.
     """
     
     # Scrape the website
     scraped_data = await scrape_website(str(request.url))
+    html_content = scraped_data.get('html', '')
     
     context = f"""
     Website URL: {request.url}
@@ -62,8 +65,8 @@ async def build_audit_context(request: AuditRequest) -> str:
     {'...(truncated)' if len(scraped_data.get('paragraphs', [])) > 5 else ''}
 
     HTML Content (first 2000 characters):
-    {scraped_data.get('html', '')[:2000]}...
+    {html_content[:2000]}...
     """
     
-    return context
+    return context, html_content
 
