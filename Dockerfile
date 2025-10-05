@@ -2,7 +2,7 @@
 FROM python:3.11-slim
 
 # Set working directory
-WORKDIR /app
+WORKDIR /VIBEHACK-BACKEND
 
 # Copy requirements first for better caching
 COPY requirements.txt .
@@ -11,10 +11,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
-COPY src/ ./
-
-# Set Python path to current directory
-ENV PYTHONPATH=/app
+COPY . .
 
 # Expose port (Render will override this with $PORT)
 EXPOSE 8000
