@@ -88,6 +88,13 @@ async def audit(request: AuditRequest):
             response_text = response_text[:-3]
         
         audit_data = json.loads(response_text)
+        
+        # Add a check to handle cases where Gemini returns null
+        if not audit_data:
+            logger.error("Gemini returned a null or empty response.")
+            raise HTTPException(status_code=500, detail="Failed to get a valid audit from AI model.")
+
+        logger.info(f"Audit data parsed successfully: {audit_data}")
         return AuditResponse(
             url=str(request.url),
             seo_score=audit_data.get("seo_score", 0),
