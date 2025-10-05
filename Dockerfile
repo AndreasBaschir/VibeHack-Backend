@@ -14,7 +14,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 RUN playwright install --with-deps chromium
 
 # Copy application code
-COPY . .
+COPY ./src/ .
 
 # Expose port (Render will override this with $PORT)
 EXPOSE 8000
