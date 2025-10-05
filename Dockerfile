@@ -16,8 +16,8 @@ COPY src/ ./
 # Set Python path to current directory
 ENV PYTHONPATH=/app
 
-# Expose port 
+# Expose port (Render will override this with $PORT)
 EXPOSE 8000
 
-# Start command - Use Railway's $PORT environment variable
-CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Start command - Use Render's $PORT environment variable
+CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"]
