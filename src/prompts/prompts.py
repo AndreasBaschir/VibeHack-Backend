@@ -1,4 +1,5 @@
 from ..schemas.pydantic_models import AuditRequest
+from ..utils.scraper import scrape_website
 
 SYSTEM_PROMPT = """
 You are an expert auditor for Search Engine Optimization (SEO) and Generative Engine Optimization (GEO).
@@ -32,16 +33,36 @@ Provide a score between 0 and 100 based on the overall SEO quality.
 Ensure your analysis is thorough and recommendations are practical and implementable.
 """
 
-def build_audit_context(request: AuditRequest) -> str:
+async def build_audit_context(request: AuditRequest) -> str:
     """
-    Build the user message context with URL and HTML content
+    Build the user message context by scraping the provided URL
     """
     
+    # Scrape the website
+    scraped_data = await scrape_website(str(request.url))
+    
     context = f"""
-        Website URL: {request.url}
+    Website URL: {request.url}
 
-        HTML Content Analysis:
-        {request.content}
+    Title: {scraped_data.get('title', 'N/A')}
+
+    Headings Structure:
+    {chr(10).join([f"{h['tag']}: {h['text']}" for h in scraped_data.get('headings', [])])}
+
+    Links ({len(scraped_data.get('links', []))} total):
+    {chr(10).join([f"- {link['text']} ({link['href']})" for link in scraped_data.get('links', [])[:10]])}
+    {'...(truncated)' if len(scraped_data.get('links', [])) > 10 else ''}
+
+    Images ({len(scraped_data.get('images', []))} total):
+    {chr(10).join([f"- Alt: '{img['alt']}' Src: {img['src']}" for img in scraped_data.get('images', [])[:5]])}
+    {'...(truncated)' if len(scraped_data.get('images', [])) > 5 else ''}
+
+    Content Paragraphs:
+    {chr(10).join(scraped_data.get('paragraphs', [])[:5])}
+    {'...(truncated)' if len(scraped_data.get('paragraphs', [])) > 5 else ''}
+
+    HTML Content (first 2000 characters):
+    {scraped_data.get('html', '')[:2000]}...
     """
     
     return context
