@@ -69,7 +69,7 @@ async def audit(request: AuditRequest):
         
         # Call Gemini API
         message = client.models.generate_content(
-            model="gemini-2.5-flash",
+            model=genai.GenerativeModel("gemini-2.5-flash"),
             config=types.GenerateContentConfig(
                 system_instruction=SYSTEM_PROMPT
             ),
@@ -77,7 +77,7 @@ async def audit(request: AuditRequest):
         )
         
         # Parse Gemini's response
-        response_text = message.content[0].strip()
+        response_text = message.text.strip()
         logger.info(f"Gemini response received: {len(response_text)} characters")
         
         # Enhanced parsing logic
