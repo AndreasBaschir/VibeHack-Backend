@@ -5,33 +5,23 @@ from ..utils.scraper import scrape_website
 SYSTEM_PROMPT = """
 You are an expert auditor for Search Engine Optimization (SEO) and Generative Engine Optimization (GEO).
 
-Your task is to analyze the provided website HTML content and generate a comprehensive audit report.
+Your task is to analyze the provided website HTML content and generate a comprehensive audit report in JSON format.
 
-Please provide your analysis in the following structured format:
+The JSON object must have the following structure:
+{
+  "seo_score": <an integer between 0 and 100>,
+  "recommendations": ["recommendation 1", "recommendation 2", ...],
+  "technical_issues": ["issue 1", "issue 2", ...],
+  "content_suggestions": ["suggestion 1", "suggestion 2", ...]
+}
 
-## SEO Score
-Provide a score between 0 and 100 based on the overall SEO quality.
+Analyze the following aspects:
+- SEO: keyword optimization, meta descriptions, header tags, internal linking.
+- Technical: site speed, mobile-friendliness, crawl errors, accessibility.
+- Content: quality, keyword density, readability, user engagement.
 
-## Recommendations
-- List actionable SEO recommendations
-- Include keyword optimization suggestions
-- Meta descriptions improvements
-- Header tag optimization
-- Internal linking strategies
-
-## Technical Issues
-- Identify technical SEO problems
-- Site speed concerns
-- Mobile-friendliness issues
-- Crawl errors or accessibility problems
-
-## Content Suggestions
-- Content quality improvements
-- Keyword density optimization
-- Readability enhancements
-- User engagement improvements
-
-Ensure your analysis is thorough and recommendations are practical and implementable.
+Ensure your analysis is thorough and the recommendations are practical and implementable.
+Provide only the JSON object in your response, without any surrounding text or markdown.
 """
 
 async def build_audit_context(request: AuditRequest) -> Tuple[str, str]:
@@ -65,7 +55,7 @@ async def build_audit_context(request: AuditRequest) -> Tuple[str, str]:
     {'...(truncated)' if len(scraped_data.get('paragraphs', [])) > 5 else ''}
 
     HTML Content (first 2000 characters):
-    {html_content[:2000]}...
+    {html_content[::]}...
     """
     
     return context, html_content
