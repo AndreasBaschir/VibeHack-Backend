@@ -95,7 +95,6 @@ async def audit(request: AuditRequest):
             technical_issues=audit_data.get("technical_issues", []),
             content_suggestions=audit_data.get("content_suggestions", []),
             status="success",
-            html_content=html_content
         )
 
     except Exception as e:
