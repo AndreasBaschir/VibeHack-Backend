@@ -14,14 +14,14 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-api_key = os.getenv("ANTHROPIC_API_KEY")
+api_key = os.getenv("GEMINI_API_KEY")
 if not api_key:
-    logger.error("❌ ANTHROPIC_API_KEY not found in environment variables")
-    raise ValueError("ANTHROPIC_API_KEY is required")
+    logger.error("❌ GEMINI_API_KEY not found in environment variables")
+    raise ValueError("GEMINI_API_KEY is required")
 
 client = genai.Client(api_key=api_key)
 
-logger.info("✅ ANTHROPIC_API_KEY found, proceeding with application setup")
+logger.info("✅ GEMINI_API_KEY found, proceeding with application setup")
 
 app = FastAPI(title="VibeHack Backend", description="AI-powered GEO analysis API", version="1.0.0")
 
